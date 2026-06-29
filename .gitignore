@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+.ai-settings.json
+.claude/
+node_modules/
+*.log
+dist/
+build/
