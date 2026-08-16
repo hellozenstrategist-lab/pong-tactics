@@ -1,45 +1,85 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#2748aa"><title>True Sight League</title><style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#2748aa;touch-action:none;font-family:system-ui;color:#fff}canvas{display:block}#ui{position:fixed;inset:0;pointer-events:none}.top{display:flex;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top)) 14px 0;font-weight:900}.score,.time{background:#07101fcc;border:2px solid #f4f0dc;padding:8px 12px}.touch{position:fixed;inset:0;pointer-events:none}.stick{position:absolute;left:20px;bottom:calc(18px + env(safe-area-inset-bottom));width:126px;height:126px;border-radius:50%;border:2px solid #f4f0dcaa;background:#07101f66;pointer-events:auto}.knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:#f4f0dc;border:3px solid #07101f}.btn{position:absolute;border-radius:50%;border:3px solid #07101f;font-weight:1000;pointer-events:auto}.boost{right:18px;bottom:calc(16px + env(safe-area-inset-bottom));width:96px;height:96px;background:#f2c44d}.jump{right:112px;bottom:calc(75px + env(safe-area-inset-bottom));width:68px;height:68px;background:#6ed7da}.msg{position:absolute;top:18%;left:50%;transform:translateX(-50%);font-size:44px;font-weight:1000;text-shadow:4px 4px #07101f;opacity:0;transition:.2s}.show{opacity:1}.start{position:fixed;inset:0;display:grid;place-items:center;background:#173b9ce8;z-index:5;padding:24px}.card{max-width:540px;background:#f4f0dc;color:#07101f;border:4px solid #07101f;padding:22px;box-shadow:10px 10px #07101f66}.card h1{font-size:52px;line-height:.9;margin:6px 0 12px}.card button{width:100%;padding:15px;background:#2854c7;color:#fff;border:0;font-weight:1000}.small{font-size:12px;line-height:1.4}.hide{display:none}</style></head><body>
-<div id="ui"><div class="top"><div class="score">YOU <span id="ps">0</span> : <span id="cs">0</span> RIVAL</div><div class="time" id="tm">01:30</div></div><div class="msg" id="msg">GOAL!</div></div>
-<div class="touch"><div class="stick" id="stick"><div class="knob" id="knob"></div></div><button class="btn jump" id="jump">JUMP</button><button class="btn boost" id="boost">BOOST</button></div>
-<div class="start" id="start"><div class="card"><b>TRUE SIGHT LEAGUE</b><h1>CYBER SOCCER</h1><p>Cel-shaded alpine car soccer. Landscape recommended.</p><p class="small">Left thumb steers. The car auto-drives. BOOST accelerates. JUMP pops the car upward. Score through the red torii goal.</p><button id="go">ENTER FIELD</button></div></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r159/three.min.js"></script><script>
-const S=new THREE.Scene();S.background=new THREE.Color(0x2854c7);S.fog=new THREE.FogExp2(0x2854c7,.012);
-const C=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,300),R=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});R.setPixelRatio(Math.min(devicePixelRatio,1.15));R.setSize(innerWidth,innerHeight);document.body.prepend(R.domElement);
-S.add(new THREE.HemisphereLight(0xffffff,0x9d8437,2));const sun=new THREE.DirectionalLight(0xfff2cf,2.8);sun.position.set(-20,30,20);S.add(sun);
-const toon=c=>new THREE.MeshToonMaterial({color:c});const blue=0x2854c7,cream=0xf4f0dc,gold=0xc5a84d,red=0xc72d38,ink=0x07101f,teal=0x35a79a;
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(120,120),toon(gold));ground.rotation.x=-Math.PI/2;S.add(ground);
-const pitch=new THREE.Mesh(new THREE.PlaneGeometry(34,58),toon(0xb9a852));pitch.rotation.x=-Math.PI/2;pitch.position.y=.02;S.add(pitch);
-for(let i=0;i<12;i++){let m=new THREE.Mesh(new THREE.ConeGeometry(8+Math.random()*6,14+Math.random()*14,7),toon(i%2?0x91acc0:0xb7cfda));m.position.set(-65+i*12,(14+Math.random()*14)/2-1,-56-Math.random()*18);m.rotation.y=Math.random();S.add(m)}
-function cloud(x,y,z,s){let g=new THREE.Group();for(let i=0;i<6;i++){let m=new THREE.Mesh(new THREE.IcosahedronGeometry(3,1),toon(cream));m.scale.set(1.8,.7,1);m.position.set((i-3)*3,Math.random()*2,Math.random()*2);g.add(m)}g.position.set(x,y,z);g.scale.setScalar(s);S.add(g)}cloud(-30,24,-65,1.4);cloud(26,29,-72,1.7);cloud(52,18,-55,1.1);
-function box(g,x,y,z,sx,sy,sz,c){let m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),toon(c));m.position.set(x,y,z);g.add(m);return m}
-function goal(z){let g=new THREE.Group();g.position.z=z;box(g,-6,3,0,.5,6,.5,red);box(g,6,3,0,.5,6,.5,red);box(g,0,6,0,14,.5,.6,red);box(g,0,7,0,16,.35,.55,red);S.add(g)}goal(-30);goal(30);
-function car(c){let g=new THREE.Group();box(g,0,.7,0,2.2,.7,3.6,c);box(g,0,1.2,.25,1.5,.7,1.4,0x173b9c);for(let x of[-1,1])for(let z of[-1.15,1.15]){let w=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,.34,12),toon(ink));w.rotation.z=Math.PI/2;w.position.set(x,.5,z);g.add(w)}box(g,0,1.45,1.55,2.6,.18,.3,red);return g}
-const P=car(teal),AI=car(0xd14a46);P.position.set(0,0,18);AI.position.set(0,0,-18);S.add(P,AI);
-const ball=new THREE.Mesh(new THREE.SphereGeometry(1.35,24,16),toon(cream));ball.position.set(0,1.35,0);S.add(ball);let BV=new THREE.Vector3();
-let yaw=Math.PI,spd=0,vy=0,grounded=true,boost=false,jump=false,joy=0,ps=0,cs=0,t=90,run=false,msgT=0,aiYaw=0,aiSpd=0;
-const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sid=null;
-function steer(e){let r=stick.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),d=Math.hypot(x,y),m=50;if(d>m){x*=m/d;y*=m/d}knob.style.transform=`translate(${x}px,${y}px)`;joy=Math.max(-1,Math.min(1,x/m))}
-stick.onpointerdown=e=>{sid=e.pointerId;stick.setPointerCapture(sid);steer(e)};stick.onpointermove=e=>{if(e.pointerId===sid)steer(e)};stick.onpointerup=stick.onpointercancel=e=>{sid=null;joy=0;knob.style.transform='translate(0,0)'};
-const B=document.getElementById('boost'),J=document.getElementById('jump');B.onpointerdown=()=>boost=true;B.onpointerup=B.onpointercancel=()=>boost=false;J.onpointerdown=()=>jump=true;J.onpointerup=J.onpointercancel=()=>jump=false;
-function fwd(a){return new THREE.Vector3(Math.sin(a),0,-Math.cos(a))}
-function reset(){P.position.set(0,0,18);AI.position.set(0,0,-18);yaw=Math.PI;aiYaw=0;spd=aiSpd=0;ball.position.set(0,1.35,0);BV.set(0,0,0)}
-function flash(s){let m=document.getElementById('msg');m.textContent=s;m.classList.add('show');msgT=1.2}
-function score(player){player?ps++:cs++;document.getElementById('ps').textContent=ps;document.getElementById('cs').textContent=cs;flash(player?'GOAL!':'BREACH!');reset()}
-function hitCar(o,a,s,pow){let p=o.position.clone().add(new THREE.Vector3(0,.8,0)),d=ball.position.clone().sub(p),L=d.length();if(L<3.55){let n=d.normalize();ball.position.copy(p).addScaledVector(n,3.55);BV.addScaledVector(n,8+Math.abs(s)*.7);BV.addScaledVector(fwd(a),Math.abs(s)*.45*pow);BV.y+=3}}
-function update(dt){if(!run)return;t=Math.max(0,t-dt);if(t<=0){run=false;flash(ps>=cs?'VICTORY':'DEFEAT');return}
-spd+=22*dt;spd*=Math.pow(.988,dt*60);if(boost)spd+=34*dt;spd=Math.min(boost?34:23,spd);yaw+=joy*2.2*dt;P.rotation.y=yaw;P.position.addScaledVector(fwd(yaw),spd*dt);
-if(jump&&grounded){vy=8;grounded=false}if(!grounded){vy-=19*dt;P.position.y+=vy*dt;if(P.position.y<=0){P.position.y=0;grounded=true;vy=0}}
-P.position.x=Math.max(-15.5,Math.min(15.5,P.position.x));P.position.z=Math.max(-30,Math.min(30,P.position.z));
-let dx=ball.position.x-AI.position.x,dz=ball.position.z-AI.position.z,target=Math.atan2(dx,-dz),diff=Math.atan2(Math.sin(target-aiYaw),Math.cos(target-aiYaw));aiYaw+=Math.max(-1.3*dt,Math.min(1.3*dt,diff));AI.rotation.y=aiYaw;aiSpd+=(15-aiSpd)*.04;AI.position.addScaledVector(fwd(aiYaw),aiSpd*dt);AI.position.x=Math.max(-15.5,Math.min(15.5,AI.position.x));AI.position.z=Math.max(-30,Math.min(30,AI.position.z));
-BV.y-=13*dt;ball.position.addScaledVector(BV,dt);if(ball.position.y<1.35){ball.position.y=1.35;if(BV.y<0)BV.y*=-.65;BV.x*=.99;BV.z*=.99}
-if(Math.abs(ball.position.x)>16.2){ball.position.x=Math.sign(ball.position.x)*16.2;BV.x*=-.75}
-if(ball.position.z>30){if(Math.abs(ball.position.x)<6&&ball.position.y<6)score(false);else{ball.position.z=30;BV.z=-Math.abs(BV.z)*.75}}
-if(ball.position.z<-30){if(Math.abs(ball.position.x)<6&&ball.position.y<6)score(true);else{ball.position.z=-30;BV.z=Math.abs(BV.z)*.75}}
-hitCar(P,yaw,spd,1);hitCar(AI,aiYaw,aiSpd,.8);if(msgT>0){msgT-=dt;if(msgT<=0)document.getElementById('msg').classList.remove('show')}
-let m=Math.floor(t/60),s=Math.floor(t%60).toString().padStart(2,'0');document.getElementById('tm').textContent=`0${m}:${s}`}
-let CP=new THREE.Vector3(),CL=new THREE.Vector3();function cam(dt){let F=fwd(yaw),D=P.position.clone().addScaledVector(F,-10.5).add(new THREE.Vector3(0,5.5,0));CP.lerp(D,.12);C.position.copy(CP);CL.lerp(P.position.clone().addScaledVector(F,7).add(new THREE.Vector3(0,1,0)),.16);C.lookAt(CL)}
-document.getElementById('go').onclick=()=>{document.getElementById('start').classList.add('hide');run=true;reset();try{screen.orientation.lock('landscape')}catch(e){}};
-let last=performance.now();function loop(n){requestAnimationFrame(loop);let dt=Math.min(.033,(n-last)/1000);last=n;update(dt);cam(dt);R.render(S,C)}requestAnimationFrame(loop);
-addEventListener('resize',()=>{C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix();R.setSize(innerWidth,innerHeight)});
-</script></body></html>
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#2854c7">
+<title>True Sight League</title>
+<style>
+*{box-sizing:border-box;-webkit-user-select:none;user-select:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#2854c7;touch-action:none;font-family:system-ui,-apple-system,sans-serif;color:#fff}
+canvas{display:block;position:fixed;inset:0}
+#ui{position:fixed;inset:0;pointer-events:none;z-index:10}
+.top{display:flex;justify-content:space-between;padding:calc(10px + env(safe-area-inset-top)) 12px 0;font-weight:900}
+.panel{background:#07101fd9;border:2px solid #f4f0dc;padding:8px 11px;box-shadow:4px 4px #07101f55}
+#msg{position:absolute;top:18%;left:50%;transform:translateX(-50%);font-size:clamp(30px,9vw,56px);font-weight:1000;font-style:italic;text-shadow:4px 4px #07101f;opacity:0;transition:.15s;text-align:center;white-space:nowrap}
+#msg.show{opacity:1}
+#touch{position:fixed;inset:0;z-index:12;pointer-events:none;display:none}
+#stick{position:absolute;left:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:128px;height:128px;border-radius:50%;border:2px solid #f4f0dccc;background:#07101f66;pointer-events:auto}
+#knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:#f4f0dc;border:3px solid #07101f}
+.btn{position:absolute;border-radius:50%;border:3px solid #07101f;font-weight:1000;pointer-events:auto;color:#07101f}
+#boost{right:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:98px;height:98px;background:#f2c44d}
+#jump{right:112px;bottom:calc(84px + env(safe-area-inset-bottom));width:70px;height:70px;background:#6ed7da}
+#start{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:22px;background:linear-gradient(#2854c7ee,#173b9cee)}
+.card{width:min(560px,100%);background:#f4f0dc;color:#07101f;border:4px solid #07101f;padding:22px;box-shadow:10px 10px #07101f66}
+.kicker{font-size:12px;font-weight:1000;letter-spacing:.13em;color:#c72d38}
+h1{font-size:clamp(42px,14vw,72px);line-height:.86;margin:8px 0 14px;font-style:italic;letter-spacing:-.06em}
+p{line-height:1.4}
+#go{width:100%;padding:16px;background:#2854c7;color:#fff;border:0;font-size:17px;font-weight:1000;box-shadow:5px 5px #07101f;touch-action:manipulation}
+#go:active{transform:translate(2px,2px);box-shadow:3px 3px #07101f}
+#status{font-size:12px;font-weight:800;margin-top:12px;min-height:18px;color:#173b9c}
+#rotate{position:fixed;z-index:25;left:50%;top:12px;transform:translateX(-50%);background:#07101fdd;border:1px solid #f4f0dc;padding:8px 12px;font-size:11px;font-weight:900;display:none}
+@media(orientation:portrait){#rotate{display:block}}
+</style>
+</head>
+<body>
+<div id="ui">
+ <div class="top"><div class="panel">YOU <span id="ps">0</span> : <span id="cs">0</span> RIVAL</div><div class="panel" id="tm">01:30</div></div>
+ <div id="msg">GOAL!</div>
+</div>
+<div id="touch">
+ <div id="stick"><div id="knob"></div></div>
+ <button class="btn" id="jump">JUMP</button>
+ <button class="btn" id="boost">BOOST</button>
+</div>
+<div id="rotate">ROTATE FOR THE FULL FIELD</div>
+<div id="start">
+ <div class="card">
+  <div class="kicker">TRUE SIGHT LEAGUE // MOBILE</div>
+  <h1>CYBER<br>SOCCER</h1>
+  <p>Cel-shaded alpine car soccer. Left thumb steers. The car auto-drives. BOOST shoots harder. JUMP challenges the ball.</p>
+  <button id="go">ENTER FIELD</button>
+  <div id="status">Ready.</div>
+ </div>
+</div>
+<script>
+(function(){
+"use strict";
+const go=document.getElementById("go");
+const status=document.getElementById("status");
+let booting=false;
+function loadScript(url){return new Promise((resolve,reject)=>{const s=document.createElement("script");s.src=url;s.async=true;s.onload=()=>resolve(url);s.onerror=()=>{s.remove();reject(new Error("Failed "+url))};document.head.appendChild(s)})}
+async function loadThree(){if(window.THREE)return;const urls=["https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js","https://unpkg.com/three@0.128.0/build/three.min.js","https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"];let last;for(const url of urls){try{status.textContent="Loading 3D engine...";await loadScript(url);if(window.THREE)return}catch(e){last=e}}throw last||new Error("Three.js unavailable")}
+go.addEventListener("click",async()=>{if(booting)return;booting=true;go.disabled=true;go.textContent="LOADING FIELD...";try{await loadThree();initGame();document.getElementById("start").style.display="none";document.getElementById("touch").style.display="block";try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock("landscape").catch(()=>{})}catch(e){}}catch(e){console.error(e);status.textContent="Load failed. Tap to retry.";go.disabled=false;go.textContent="RETRY";booting=false}});
+function initGame(){
+const THREE=window.THREE,scene=new THREE.Scene();scene.background=new THREE.Color(0x2854c7);scene.fog=new THREE.FogExp2(0x2854c7,.011);
+const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,300),renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.15));renderer.setSize(innerWidth,innerHeight);document.body.insertBefore(renderer.domElement,document.body.firstChild);
+scene.add(new THREE.HemisphereLight(0xffffff,0x9d8437,2));const sun=new THREE.DirectionalLight(0xfff2cf,2.4);sun.position.set(-20,30,20);scene.add(sun);const toon=c=>new THREE.MeshToonMaterial({color:c}),cream=0xf4f0dc,gold=0xc5a84d,red=0xc72d38,ink=0x07101f,teal=0x35a79a;
+let g=new THREE.Mesh(new THREE.PlaneGeometry(120,120),toon(gold));g.rotation.x=-Math.PI/2;scene.add(g);let pitch=new THREE.Mesh(new THREE.PlaneGeometry(34,58),toon(0xb9a852));pitch.rotation.x=-Math.PI/2;pitch.position.y=.02;scene.add(pitch);
+for(let i=0;i<13;i++){let h=12+Math.random()*15,m=new THREE.Mesh(new THREE.ConeGeometry(7+Math.random()*7,h,7),toon(i%2?0x91acc0:0xb7cfda));m.position.set(-68+i*11,h/2-1,-57-Math.random()*17);m.rotation.y=Math.random();scene.add(m)}
+function cloud(x,y,z,s){let q=new THREE.Group();for(let i=0;i<6;i++){let m=new THREE.Mesh(new THREE.IcosahedronGeometry(3,1),toon(cream));m.scale.set(1.8,.7,1);m.position.set((i-3)*3,Math.random()*2,Math.random()*2);q.add(m)}q.position.set(x,y,z);q.scale.setScalar(s);scene.add(q)}cloud(-30,24,-65,1.4);cloud(27,29,-72,1.7);cloud(52,18,-55,1.1);
+function box(parent,x,y,z,sx,sy,sz,c){let m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),toon(c));m.position.set(x,y,z);parent.add(m);return m}function makeGoal(z){let q=new THREE.Group();q.position.z=z;box(q,-6,3,0,.5,6,.5,red);box(q,6,3,0,.5,6,.5,red);box(q,0,6,0,14,.5,.6,red);box(q,0,7,0,16,.35,.55,red);scene.add(q)}makeGoal(-30);makeGoal(30);
+function makeCar(c){let q=new THREE.Group();box(q,0,.7,0,2.2,.7,3.6,c);box(q,0,1.2,.25,1.5,.7,1.4,0x173b9c);for(const x of[-1,1])for(const z of[-1.15,1.15]){let w=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,.34,12),toon(ink));w.rotation.z=Math.PI/2;w.position.set(x,.5,z);q.add(w)}box(q,0,1.45,1.55,2.6,.18,.3,red);return q}
+const player=makeCar(teal),ai=makeCar(0xd14a46);scene.add(player,ai);const ball=new THREE.Mesh(new THREE.SphereGeometry(1.35,20,14),toon(cream));scene.add(ball);let ballV=new THREE.Vector3();
+let yaw=Math.PI,speed=0,vy=0,grounded=true,boosting=false,jumping=false,steer=0,aiYaw=0,aiSpeed=0,playerScore=0,cpuScore=0,time=90,running=true,msgT=0;const ps=document.getElementById("ps"),cs=document.getElementById("cs"),tm=document.getElementById("tm"),msg=document.getElementById("msg");
+function fwd(a){return new THREE.Vector3(Math.sin(a),0,-Math.cos(a))}function reset(){player.position.set(0,0,18);player.rotation.y=Math.PI;yaw=Math.PI;speed=0;ai.position.set(0,0,-18);ai.rotation.y=0;aiYaw=0;aiSpeed=0;ball.position.set(0,1.35,0);ballV.set(0,0,0)}reset();
+const stick=document.getElementById("stick"),knob=document.getElementById("knob");let pointer=null;function moveStick(e){const r=stick.getBoundingClientRect();let x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2);const max=49,d=Math.hypot(x,y);if(d>max){x*=max/d;y*=max/d}knob.style.transform=`translate(${x}px,${y}px)`;steer=Math.max(-1,Math.min(1,x/max))}stick.addEventListener("pointerdown",e=>{pointer=e.pointerId;stick.setPointerCapture(pointer);moveStick(e)});stick.addEventListener("pointermove",e=>{if(e.pointerId===pointer)moveStick(e)});function releaseStick(){pointer=null;steer=0;knob.style.transform="translate(0,0)"}stick.addEventListener("pointerup",releaseStick);stick.addEventListener("pointercancel",releaseStick);
+const boostBtn=document.getElementById("boost"),jumpBtn=document.getElementById("jump");boostBtn.addEventListener("pointerdown",e=>{e.preventDefault();boosting=true});["pointerup","pointercancel","pointerleave"].forEach(ev=>boostBtn.addEventListener(ev,()=>boosting=false));jumpBtn.addEventListener("pointerdown",e=>{e.preventDefault();jumping=true});["pointerup","pointercancel","pointerleave"].forEach(ev=>jumpBtn.addEventListener(ev,()=>jumping=false));
+function flash(t){msg.textContent=t;msg.classList.add("show");msgT=1.1}function scoreGoal(p){if(p){playerScore++;ps.textContent=playerScore;flash("GOAL!")}else{cpuScore++;cs.textContent=cpuScore;flash("BREACH!")}reset()}function hit(o,a,s,pow){const p=o.position.clone().add(new THREE.Vector3(0,.8,0)),d=ball.position.clone().sub(p),L=d.length();if(L<3.55){const n=d.normalize();ball.position.copy(p).addScaledVector(n,3.56);ballV.addScaledVector(n,8+Math.abs(s)*.7);ballV.addScaledVector(fwd(a),Math.abs(s)*.42*pow);ballV.y+=3}}
+function update(dt){if(!running)return;time=Math.max(0,time-dt);if(time<=0){running=false;flash(playerScore>=cpuScore?"VICTORY":"DEFEAT");return}speed+=22*dt;speed*=Math.pow(.988,dt*60);if(boosting)speed+=38*dt;speed=Math.min(boosting?35:23,speed);yaw+=steer*2.2*dt;player.rotation.y=yaw;player.position.addScaledVector(fwd(yaw),speed*dt);if(jumping&&grounded){vy=8;grounded=false}if(!grounded){vy-=19*dt;player.position.y+=vy*dt;if(player.position.y<=0){player.position.y=0;vy=0;grounded=true}}player.position.x=Math.max(-15.5,Math.min(15.5,player.position.x));player.position.z=Math.max(-30,Math.min(30,player.position.z));let dx=ball.position.x-ai.position.x,dz=ball.position.z-ai.position.z,target=Math.atan2(dx,-dz),dif=Math.atan2(Math.sin(target-aiYaw),Math.cos(target-aiYaw));aiYaw+=Math.max(-1.35*dt,Math.min(1.35*dt,dif));ai.rotation.y=aiYaw;aiSpeed+=(15-aiSpeed)*.04;ai.position.addScaledVector(fwd(aiYaw),aiSpeed*dt);ai.position.x=Math.max(-15.5,Math.min(15.5,ai.position.x));ai.position.z=Math.max(-30,Math.min(30,ai.position.z));ballV.y-=13*dt;ball.position.addScaledVector(ballV,dt);if(ball.position.y<1.35){ball.position.y=1.35;if(ballV.y<0)ballV.y*=-.64;ballV.x*=.99;ballV.z*=.99}if(Math.abs(ball.position.x)>16.2){ball.position.x=Math.sign(ball.position.x)*16.2;ballV.x*=-.75}if(ball.position.z>30){if(Math.abs(ball.position.x)<6&&ball.position.y<6)scoreGoal(false);else{ball.position.z=30;ballV.z=-Math.abs(ballV.z)*.75}}if(ball.position.z<-30){if(Math.abs(ball.position.x)<6&&ball.position.y<6)scoreGoal(true);else{ball.position.z=-30;ballV.z=Math.abs(ballV.z)*.75}}hit(player,yaw,speed,1);hit(ai,aiYaw,aiSpeed,.8);if(msgT>0){msgT-=dt;if(msgT<=0)msg.classList.remove("show")}const mm=Math.floor(time/60),ss=Math.floor(time%60).toString().padStart(2,"0");tm.textContent=`0${mm}:${ss}`}
+let cp=new THREE.Vector3(),cl=new THREE.Vector3();function cameraUpdate(){const F=fwd(yaw),desired=player.position.clone().addScaledVector(F,-10).add(new THREE.Vector3(0,5.2,0));cp.lerp(desired,.13);camera.position.copy(cp);cl.lerp(player.position.clone().addScaledVector(F,7).add(new THREE.Vector3(0,1,0)),.16);camera.lookAt(cl)}let last=performance.now();function loop(now){requestAnimationFrame(loop);const dt=Math.min(.033,(now-last)/1000);last=now;update(dt);cameraUpdate();renderer.render(scene,camera)}requestAnimationFrame(loop);addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)})}
+})();
+</script>
+</body>
+</html>
