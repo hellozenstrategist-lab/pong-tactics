@@ -4,7 +4,9 @@ A playable desktop browser arena: moving human summoners, separate floating Fami
 
 ## Look
 
-Ink-and-mist presentation inspired by etched dark-fantasy illustration: a pale lavender fog with white cloud filigree, black ink monoliths that drip and sprout thorns, thorned-eye sigils, and summoners drawn as winged mantles with starburst (or thorn) crowns and long ink-wrapped legs. Your Familiar is a floating thorned eye; the hostile one is a spiked ink wisp. Hits splatter ink, perfect parries and clashes throw white starbursts with radiating ink lines, and heavy impacts tear the frame. The UI is pale paper with etched double rules and italic serif type. All art is procedural Canvas 2D + CSS using system fonts, so the offline build stays self-contained. `prefers-reduced-motion` disables flashes, tears and shake.
+Airbrushed fantasy-painting presentation: cold blue-grey fog, weathered stone ruins hung with crimson banners, summoners painted as armoured knights (yours white-haired with a crimson cape, the hostile one in black steel), spirit-flame Familiars, drifting embers, ash and smoke, glowing rune stones, and soft light flares on parries and clashes. The menu shows a painted bust of the summoner. The UI uses frosted dark-steel panels with gold trim, crimson accents and engraved serif capitals.
+
+Everything is procedural Canvas 2D + CSS with system fonts, so the offline build stays self-contained. Soft "airbrush" edges come from radial-gradient dabs; the arena and the menu art are painted once in layers and softened with a single blur per layer, so frames stay cheap (no per-frame `ctx.filter`). Where canvas filters are unsupported (e.g. Safari) the same art renders slightly crisper. `prefers-reduced-motion` disables flashes, shake and drifting particles.
 
 ## Play immediately
 
@@ -61,7 +63,7 @@ Opposing melee or colliding spell projectiles trigger a 1.8s Resonance Clash. Se
 | `engine.js` | Seeded 60 Hz simulation, movement, attacks, resources, defense, interrupts, clashes, capture and verdicts; no DOM/network |
 | `ai.js` | Offline interpreter, API action adapter, independent bot policy |
 | `input.js` | Keyboard and mouse state, separate from text input |
-| `renderer.js` | Ink-and-mist Canvas 2D arena (baked static layer), summoners and Familiars, ink impact effects, mist fog and minimap |
+| `renderer.js` | Painted Canvas 2D arena (layered, baked once), knights and Familiars, light/ember/smoke effects, fog, menu key art and minimap |
 | `ui.js` | Screens, console, asynchronous requests, HUD, evidence and audio |
 | `server/familiar.mjs` | Authenticated same-origin OpenAI bridge and encrypted server-side credential vault |
 | `app/api/familiar/*` | Thin runtime bindings |
