@@ -1,17 +1,202 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JAOYA — Fight for time</title><meta name="theme-color" content="#1b1f25"><link rel="stylesheet" href="/game/style.css"></head><body>
-<canvas id="world" tabindex="0" aria-label="Top-down JAOYA arena. WASD move, mouse aim, click attack, Q parry, E ward, Space dash, Enter type."></canvas><div class="vignette"></div>
-<header class="topbar"><a id="homeLink" href="#" class="brand">✧ JAOYA<span>familiar death games · v2</span></a><div class="topbuttons"><span id="connectionBadge">OFFLINE FAMILIAR</span><button id="setupButton">Bind Familiar ↗</button><button id="helpButton">Controls ?</button><button id="soundButton" aria-label="Enable sound">♫ OFF</button></div></header>
-<section id="menu" class="menu"><div class="menutext"><div class="eyebrow">BRING YOUR OWN MIND</div><h1>FIGHT FOR TIME.<br><em>CLAIM THE CORE.</em></h1><p>You are the reflex. Your Familiar is the mind.<br>Create space. Speak your spell. Survive the channel.</p><div class="modechoice"><button id="ctfMode" class="active"><strong>FLAG HUNT</strong><span>Read the clues. Hold the real site.</span></button><button id="duelMode"><strong>ARENA DUEL</strong><span>Fight a rushing Summoner.</span></button></div><button id="startButton" class="primary">ENTER THE CONVERGENCE <span>↗</span></button><div class="menuoptions"><button id="chooseBot"><small>ADVERSARY</small><strong id="selectedBotName">IRON MONK</strong><span id="selectedBotDescription">Rushdown · Normal</span></button><button id="chooseTier"><small>FAMILIAR</small><strong id="selectedTierName">NYX / SWIFT</strong><span id="selectedTierDescription">Protect the 1.3s channel.</span></button></div><div class="menukeys"><kbd>WASD</kbd> MOVE <kbd>MOUSE</kbd> AIM <kbd>CLICK</kbd> STRIKE <kbd>ENTER</kbd> INVOKE</div><div class="noticecopy">Offline prototype · Spatial combat + synthetic deduction objective<br>No exploit execution or live cybersecurity services.</div></div><div class="menuaside"><span>THE HOLLOW CONVERGENCE</span><strong>SPACE =<br><em>THINKING TIME.</em></strong><p>A fighter is coming.<br>Your Familiar needs three more seconds.</p><div class="menucompass">✧</div></div></section>
-<section id="match" class="hidden"><div class="hud"><div class="hudactor"><div class="names"><strong id="playerName">SUMMONER</strong><span id="phpText">130 HP</span></div><div class="meter hp"><i id="php"></i></div><div class="resources"><div class="meter mana"><i id="pmana"></i></div><small id="pmanaText">100 MP</small><div class="meter stamina"><i id="pstamina"></i></div><small id="pstaminaText">100 ST</small></div><div class="familiarline"><span>✧ <b id="familiarTitle">NYX</b> <small id="playerTier">SWIFT</small></span><span id="latency">LOCAL</span></div><div class="castlabel"><span id="pstatus">Familiar ready</span><span id="pcasttime"></span></div><div class="meter charge"><i id="pcharge"></i></div></div><div class="matchclock"><span id="roundlabel">FLAG HUNT</span><strong id="timer">04:00</strong><small id="score">0 / 0 KILLS</small></div><div class="hudactor enemy"><div class="names"><strong id="enemyName">IRON MONK</strong><span id="ehpText">130 HP</span></div><div class="meter hp"><i id="ehp"></i></div><div class="castlabel"><span id="estatus">Hunting you</span><span id="ecasttime"></span></div><div class="meter charge"><i id="echarge"></i></div><div class="enemyintel" id="enemyIntel">FAMILIAR · OFFLINE POLICY</div></div></div>
-<div class="objectivebar" id="objectivebar"><div><span class="eyebrow">FLAG CORE</span><strong id="objectiveText">Reach the Noetic Relay. Type scan.</strong></div><div class="capturemeter"><i id="captureFill"></i></div><span id="captureText">0 / 4s</span><button id="objectiveButton">NOETIC PANEL <kbd>TAB</kbd></button></div>
-<aside id="noeticPanel" class="noetic hidden"><div class="panelhead"><span>NOETIC EVIDENCE</span><button id="closeNoetic" aria-label="Close clue panel">×</button></div><p class="disclosure">Local symbolic puzzle. Familiar reads records and verifies a match-scoped proof. The world keeps moving.</p><div id="clueSteps" class="steps"></div><div id="clueFeed"></div><button id="scanButton" class="primary small">FAMILIAR: SCAN <span>↗</span></button><p class="disclosure">After each channel, scan again. Then reach the verified site and hold it uncontested.</p></aside>
-<div id="announcement" role="status"></div><div id="dice" class="dice hidden"><div id="dieCube" class="diecube"><div class="front" id="dieFace">⚄</div><div class="side"></div><div class="top"></div></div><div><small>CHANNEL DEFENSE / D6</small><strong id="diceText">THE CHANNEL HOLDS</strong></div></div>
-<div id="clash" class="clash hidden"><div class="eyebrow">SIMULTANEOUS IMPACT</div><h2>RESONANCE <em>CLASH</em></h2><p>Seal your tactic. Reveal together.</p><div class="clashchoices"><button data-tactic="push"><kbd>1</kbd><strong>PUSH</strong><small>beats Break</small></button><button data-tactic="redirect"><kbd>2</kbd><strong>REDIRECT</strong><small>beats Push</small></button><button data-tactic="break"><kbd>3</kbd><strong>BREAK</strong><small>beats Redirect</small></button></div><div class="meter charge"><i id="clashFill"></i></div><span id="clashChosen">TYPE A TACTIC OR PRESS 1 / 2 / 3</span></div>
-<div id="respawn" class="respawn hidden"><h2>SUMMONER FALLEN</h2><span id="respawnTime">4</span><p>Your Familiar remains yours. Re-entering the arena.</p></div>
-<div class="battlehint"><span id="movementHint">WASD · MOVE / Q · PARRY / E · WARD / SPACE · DASH</span><button id="forfeitButton">Leave arena ↗</button></div></section>
-<section id="console" class="console hidden"><div class="consolehead"><span>✧ JEV <small>THE BRIDGE</small></span><span id="channel">LOCAL FAMILIAR</span><span id="inputMode">ENTER TO TYPE · ESC TO FIGHT</span></div><div class="consolebody"><div class="commands"><button data-command="attack">attack</button><button data-command="defend">defend</button><button data-command="ward">ward</button><button data-command="parry">parry</button><button data-command="dodge">dodge</button><button data-command="scan">scan</button><button data-command="cancel">cancel</button><button data-command="swap">reserve</button></div><form id="commandForm"><span>›</span><input id="commandInput" autocomplete="off" spellcheck="false" maxlength="500" aria-label="Jev combat incantation" placeholder="Press Enter to type. The arena never pauses."><button type="submit">INVOKE <kbd>↵</kbd></button></form><div id="combatLog" role="log" aria-label="Combat chronicle"></div></div><div class="consolehint"><span id="inputHint">Freeform: “open a void rift” / “heal me” / “create a false echo”</span><span id="reserveStatus">RESERVE: OFFLINE · SWAP 5s</span></div></section>
-<dialog id="setupDialog"><div class="dialoghead"><div><span class="eyebrow">BIND YOUR MIND</span><h2>Choose your Familiar.</h2></div><button class="close" data-close="setupDialog" aria-label="Close">×</button></div><div class="tabs"><button id="offlineTab" class="active">Offline</button><button id="apiTab">OpenAI API</button><button id="accountTab">ChatGPT account</button></div><section id="offlinePanel"><div class="notice"><h3>Offline Familiar · ready</h3><p>A local intent interpreter casts spells. The training decoder reads synthetic records and submits proofs for Flag Hunt. No paid inference.</p></div><label class="fieldlabel">FAMILIAR NAME<input id="familiarName" value="Nyx" maxlength="18"></label><div id="tierCards" class="tiercards"></div><button id="useOffline" class="primary full">BIND OFFLINE FAMILIAR <span>↗</span></button></section><section id="apiPanel" class="hidden"><div class="notice"><h3>Your OpenAI spell Familiar</h3><p>Bring an OpenAI Platform API key for freeform spell interpretation in Arena Duel. The key stays encrypted server-side, expires after 24 hours, and is deleted on disconnect.</p><p>Flag Hunt's training decoder is offline-only in this slice. API objective reasoning, local sidecars, and full capability preflight are planned. API charges are separate from a ChatGPT subscription.</p></div><form id="connectForm"><label class="fieldlabel">API KEY<input id="apiKey" type="password" placeholder="sk-…" autocomplete="off" maxlength="300" required></label><label class="fieldlabel">MODEL<input id="modelInput" value="gpt-4.1-mini" maxlength="80" required></label><button id="connectButton" class="primary full" type="submit">CONNECT SPELL FAMILIAR <span>↗</span></button></form><button id="useSavedButton" class="secondary full hidden">Use saved API connection</button><button id="disconnectButton" class="secondary full">Disconnect and delete saved key</button></section><section id="accountPanel" class="hidden"><div class="notice"><h3>ChatGPT plan access · not connected</h3><p>Official account-based inference requires eligible registration and separate inference consent. Site identity login alone does not grant access to your plan.</p><p>This prototype does not request ChatGPT passwords, cookies, or copied session tokens.</p><a href="https://developers.openai.com/siwc/quickstart" target="_blank" rel="noopener">Official connection documentation ↗</a></div><button id="accountOffline" class="primary full">USE OFFLINE FAMILIAR <span>↗</span></button></section><p id="setupStatus" role="status"></p></dialog>
-<dialog id="botDialog"><div class="dialoghead"><div><span class="eyebrow">THE OTHER SUMMONER</span><h2>Choose your pressure.</h2></div><button class="close" data-close="botDialog" aria-label="Close">×</button></div><div id="botCards" class="botcards"></div><label class="fieldlabel">DIFFICULTY<select id="difficulty"><option value="easy">Initiate / more openings</option><option value="normal" selected>Adept / dangerous rushdown</option><option value="hard">Deathwish / sharp reactions</option></select></label><button id="confirmBot" class="primary full">SEAL THE MATCH <span>↗</span></button></dialog>
-<dialog id="helpDialog"><div class="dialoghead"><div><span class="eyebrow">CHESS BOXING WITH AI WIZARDS</span><h2>Fight for thinking time.</h2></div><button class="close" data-close="helpDialog" aria-label="Close">×</button></div><div class="helpgrid"><div><h3>Movement & fighting</h3><p><b>WASD</b> moves. <b>Mouse</b> aims. <b>Left-click</b> strikes. <b>Q</b> parries. <b>E</b> wards. <b>Space / Shift</b> dashes. <b>F</b> guards. <b>R</b> counters after a perfect parry.</p></div><div><h3>Typing under pressure</h3><p><b>Enter</b> focuses Jev; Enter submits. <b>Escape</b> returns to WASD. While typing, <b>arrow keys</b> move and <b>right-click</b> steers. <b>Alt Q/E/F</b> parry/ward/guard without clearing your text. Left-click on the arena still strikes.</p></div><div><h3>Channel defense</h3><p>Taking a hit during thinking, casting, or scanning rolls <b>d6</b>. 4–6 saves the channel. Guard improves that to 2–6. A ward absorbs one hit. A failed roll deals damage and cancels the channel.</p></div><div><h3>Clashes & objectives</h3><p>Colliding attacks trigger a tactic duel: <b>Push &gt; Break &gt; Redirect &gt; Push</b>. Choose 1/2/3 or type the tactic. In Flag Hunt, reach the relay, <b>scan four times</b>, then physically hold the verified flag site for 4s.</p></div></div><div class="notice"><p>Heavy profiles have longer game windups. Actual API latency adds vulnerable thinking time. Your human can still move and strike while the Familiar reasons.</p><p><b>Tab</b> opens the clue panel without pausing. <b>swap</b> summons the offline reserve through an interruptible 5s channel. In Flag Hunt, death respawns you; kills alone do not win. These are solo local matches, not authoritative multiplayer.</p><p>The objective is a synthetic deduction puzzle. Real CTF service exploitation and production isolation are not implemented.</p></div><button class="primary full" data-close="helpDialog">ENTER WITH INTENT <span>↗</span></button></dialog>
-<dialog id="resultDialog"><div class="resultmark">✧</div><span class="eyebrow">THE CONVERGENCE REMEMBERS</span><h2 id="resultTitle">THE FLAG IS YOURS</h2><p id="resultDescription"></p><div id="resultStats" class="resultstats"></div><button id="rematchButton" class="primary full">ANOTHER CONVERGENCE <span>↗</span></button><button id="returnButton" class="secondary full">Return to the hollow</button></dialog>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JAOYA</title><meta name="theme-color" content="#0e1014"><link rel="stylesheet" href="/game/style.css"></head><body>
+<canvas id="world" tabindex="0" aria-label="JAOYA arena. WASD to move, mouse to aim, click to strike, Q parry, E ward, Space dash, Enter to speak to your Familiar."></canvas><div class="vignette"></div>
+
+<header class="topbar">
+ <a id="homeLink" href="#" class="brand" aria-label="JAOYA, main menu">JAOYA</a>
+ <div class="topactions">
+  <span id="connectionBadge" class="status">Offline Familiar</span>
+  <button id="forfeitButton" type="button" class="btn ghost match-only">Leave match</button>
+  <button id="setupButton" type="button" class="btn ghost"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 9.6 5l3.9.4-2.9 2.6.8 3.8L8 9.9l-3.4 1.9.8-3.8L2.5 5.4 6.4 5Z"/></svg><span>Familiar</span></button>
+  <button id="helpButton" type="button" class="btn ghost"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.25"/><path d="M6.3 6.2a1.8 1.8 0 1 1 2.6 1.6c-.6.3-.9.7-.9 1.3v.3"/><path d="M8 11.4v.1"/></svg><span>How to play</span></button>
+  <button id="soundButton" type="button" class="btn ghost icon" aria-pressed="false" title="Sound"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 6h2.2L8 3.3v9.4L4.7 10H2.5Z"/><path class="waves" d="M10.4 5.6a3.4 3.4 0 0 1 0 4.8M12.2 3.9a5.8 5.8 0 0 1 0 8.2"/><path class="mute" d="m10.5 6 3 4m0-4-3 4"/></svg><span id="soundLabel" class="sr">Sound off</span></button>
+ </div>
+</header>
+
+<section id="menu" class="menu">
+ <div class="menu-panel">
+  <p class="kicker">Familiar Death Games</p>
+  <h1 class="title">JAOYA</h1>
+  <p class="lede">You fight. Your Familiar casts. Protect the channel long enough to land the spell.</p>
+  <p class="section-label">Mode</p>
+  <div class="modes" role="group" aria-label="Mode">
+   <button id="ctfMode" type="button" class="mode active"><span class="mode-name">Flag Hunt</span><span class="mode-desc">Decode the relay, then hold the true flag site.</span><span class="mode-meta">Objective · 4 min</span></button>
+   <button id="duelMode" type="button" class="mode"><span class="mode-name">Arena Duel</span><span class="mode-desc">Last summoner standing wins.</span><span class="mode-meta">Elimination · 4 min</span></button>
+  </div>
+  <p class="section-label">Loadout</p>
+  <div class="loadout">
+   <button id="chooseBot" type="button" class="loadout-row"><span class="row-label">Opponent</span><span class="row-main"><strong id="selectedBotName">Iron Monk</strong><span id="selectedBotDescription">Rushdown · Normal</span></span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3.5 4.5 4.5L6 12.5"/></svg></button>
+   <button id="chooseTier" type="button" class="loadout-row"><span class="row-label">Familiar</span><span class="row-main"><strong id="selectedTierName">Nyx</strong><span id="selectedTierDescription">Swift · 1.3 s casts</span></span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3.5 4.5 4.5L6 12.5"/></svg></button>
+  </div>
+  <button id="startButton" type="button" class="btn primary large">Play</button>
+  <p class="keys"><kbd>WASD</kbd> Move <kbd>Mouse</kbd> Aim <kbd>Click</kbd> Strike <kbd>Enter</kbd> Speak</p>
+ </div>
+</section>
+
+<section id="match" class="hidden">
+ <div class="hud-top">
+  <div id="objectivebar" class="card tracker">
+   <div class="tracker-head"><span class="label">Objective</span><button id="objectiveButton" type="button" class="link">Clues <kbd>Tab</kbd></button></div>
+   <strong id="objectiveText">Reach the Noetic Relay</strong>
+   <div class="tracker-foot"><div id="objectiveSteps" class="steps" aria-hidden="true"><i></i><i></i><i></i><i></i></div><button type="button" class="btn small" data-command="scan">Scan</button></div>
+   <div class="capture"><div class="bar"><i id="captureFill"></i></div><span id="captureText" class="num"></span></div>
+  </div>
+  <div class="hud-center">
+   <div class="matchpill"><span id="roundlabel">Flag Hunt</span><strong id="timer" class="num">04:00</strong><span id="score" class="num">Kills 0–0</span></div>
+   <div id="enemyCard" class="card enemy">
+    <div class="unit-row"><strong id="enemyName">Iron Monk</strong><span id="enemyIntel" class="tag">In sight</span><span id="ehpText" class="num">130 / 130</span></div>
+    <div class="bar hp"><i id="ehp"></i></div>
+    <div class="unit-row sub"><span id="estatus">Ready</span><span id="ecasttime" class="num"></span></div>
+    <div class="bar cast"><i id="echarge"></i></div>
+   </div>
+  </div>
+  <div class="minimap-slot" aria-hidden="true"></div>
+ </div>
+
+ <aside id="noeticPanel" class="card drawer hidden" aria-label="Clues">
+  <div class="drawer-head"><strong>Clues</strong><button id="closeNoetic" type="button" class="icon-btn" aria-label="Close clues"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8m0-8-8 8"/></svg></button></div>
+  <p class="muted">Each scan reveals a record. Your Familiar decodes them while the fight goes on.</p>
+  <p id="clueSteps" class="label">0 of 4 scans</p>
+  <div id="clueFeed"></div>
+  <button id="scanButton" type="button" class="btn primary full">Scan</button>
+ </aside>
+
+ <div id="announcement" role="status"></div>
+
+ <div id="clash" class="hidden" role="dialog" aria-label="Clash">
+  <span class="label">Clash</span>
+  <h2>Choose a tactic</h2>
+  <p>You're locked together. Both picks are revealed at once.</p>
+  <div class="tactics">
+   <button type="button" data-tactic="push"><kbd>1</kbd><strong>Push</strong><small>beats Break</small></button>
+   <button type="button" data-tactic="redirect"><kbd>2</kbd><strong>Redirect</strong><small>beats Push</small></button>
+   <button type="button" data-tactic="break"><kbd>3</kbd><strong>Break</strong><small>beats Redirect</small></button>
+  </div>
+  <div class="bar timer"><i id="clashFill"></i></div>
+  <span id="clashChosen">Press 1, 2 or 3</span>
+ </div>
+
+ <div id="respawn" class="hidden"><span class="label">You fell</span><strong id="respawnTime" class="num">4.0 s</strong><p>Respawning. Your clues are kept.</p></div>
+
+ <div class="hud-bottom">
+  <div class="player-col">
+   <div id="dice" class="card hidden"><div id="dieFace" class="die" data-roll="5">5</div><div><strong id="diceTitle">Channel held</strong><span id="diceText">Rolled 5 on d6 · needed 4+</span></div></div>
+   <div class="card player">
+    <div class="unit-row"><strong id="playerName">You</strong><span id="phpText" class="num">130 / 130</span></div>
+    <div class="bar hp"><i id="php"></i></div>
+    <div class="resources">
+     <div class="res"><span>Mana</span><div class="bar mana"><i id="pmana"></i></div><span id="pmanaText" class="num">100</span></div>
+     <div class="res"><span>Stamina</span><div class="bar stamina"><i id="pstamina"></i></div><span id="pstaminaText" class="num">100</span></div>
+    </div>
+    <div class="familiar">
+     <div class="unit-row"><span class="fam-name"><strong id="familiarTitle">Nyx</strong><span id="playerTier" class="tag">Swift</span></span><span id="latency" class="muted num">Offline</span></div>
+     <div class="unit-row sub"><span id="pstatus">Ready</span><span id="pcasttime" class="num"></span></div>
+     <div class="bar cast"><i id="pcharge"></i></div>
+     <div class="fam-actions"><button type="button" class="btn small" data-command="cancel"><kbd>X</kbd>Cancel cast</button><button type="button" class="btn small" data-command="swap">Reserve<i class="cd"></i></button></div>
+    </div>
+   </div>
+  </div>
+
+  <section id="console" class="dock hidden">
+   <form id="commandForm" autocomplete="off"><span class="prompt" aria-hidden="true">›</span><input id="commandInput" autocomplete="off" spellcheck="false" maxlength="500" aria-label="Speak to your Familiar" placeholder="Describe a spell — “heal me”, “open a void rift”"><button type="submit" class="btn cast-btn">Cast</button></form>
+   <p id="inputHint" class="hint">Enter to speak to your Familiar</p>
+   <div class="abilities" role="toolbar" aria-label="Abilities">
+    <button type="button" class="slot" data-command="attack"><kbd>LMB</kbd><span>Strike</span><i class="cd"></i></button>
+    <button type="button" class="slot" data-command="parry"><kbd>Q</kbd><span>Parry</span><i class="cd"></i></button>
+    <button type="button" class="slot" data-command="counter"><kbd>R</kbd><span>Counter</span><i class="cd"></i></button>
+    <button type="button" class="slot" data-command="ward"><kbd>E</kbd><span>Ward</span><i class="cd"></i></button>
+    <button type="button" class="slot" data-command="defend"><kbd>F</kbd><span>Guard</span><i class="cd"></i></button>
+    <button type="button" class="slot" data-command="dodge"><kbd>Space</kbd><span>Dash</span><i class="cd"></i></button>
+    <span class="slot-sep" aria-hidden="true"></span>
+    <button type="button" class="slot spell" data-command="conjure an ember lance"><kbd>1</kbd><span>Ember</span><small>16</small><i class="cd"></i></button>
+    <button type="button" class="slot spell" data-command="tear open a void rift"><kbd>2</kbd><span>Rift</span><small>24</small><i class="cd"></i></button>
+    <button type="button" class="slot spell" data-command="heal me"><kbd>3</kbd><span>Mend</span><small>25</small><i class="cd"></i></button>
+   </div>
+  </section>
+
+  <div id="combatLog" class="log" role="log" aria-label="Combat log"></div>
+ </div>
+</section>
+
+<dialog id="setupDialog">
+ <div class="dialog-head"><div><h2>Familiar</h2><p>Choose how your Familiar understands your spells.</p></div><button type="button" class="icon-btn" data-close="setupDialog" aria-label="Close"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8m0-8-8 8"/></svg></button></div>
+ <div class="dialog-body">
+  <div class="tabs"><button id="offlineTab" type="button" class="active">Offline</button><button id="apiTab" type="button">OpenAI API</button><button id="accountTab" type="button">ChatGPT account</button></div>
+  <section id="offlinePanel">
+   <p class="note">Runs locally with a keyword interpreter. Works in both modes, with no API cost.</p>
+   <label class="field"><span>Name</span><input id="familiarName" value="Nyx" maxlength="18"></label>
+   <p class="field-title">Speed</p>
+   <div id="tierCards" class="choices three"></div>
+   <button id="useOffline" type="button" class="btn primary full">Use offline Familiar</button>
+  </section>
+  <section id="apiPanel" class="hidden">
+   <p class="note">Use your own OpenAI Platform API key for freeform spells in Arena Duel. The key is encrypted on the server, expires after 24 hours and is deleted when you disconnect. API usage is billed separately from ChatGPT. Flag Hunt always uses the offline decoder.</p>
+   <form id="connectForm"><label class="field"><span>API key</span><input id="apiKey" type="password" placeholder="sk-…" autocomplete="off" maxlength="300" required></label><label class="field"><span>Model</span><input id="modelInput" value="gpt-4.1-mini" maxlength="80" required></label><button id="connectButton" class="btn primary full" type="submit">Connect</button></form>
+   <button id="useSavedButton" type="button" class="btn full hidden">Use saved connection</button>
+   <button id="disconnectButton" type="button" class="btn danger full">Disconnect and delete key</button>
+  </section>
+  <section id="accountPanel" class="hidden">
+   <p class="note">ChatGPT plan access isn't available. Using a ChatGPT plan requires an officially registered app and separate consent; signing in to this site doesn't grant it. JAOYA never asks for ChatGPT passwords, cookies or session tokens.</p>
+   <p class="note"><a href="https://developers.openai.com/siwc/quickstart" target="_blank" rel="noopener">Read the official documentation</a></p>
+   <button id="accountOffline" type="button" class="btn primary full">Use offline Familiar</button>
+  </section>
+  <p id="setupStatus" role="status"></p>
+ </div>
+</dialog>
+
+<dialog id="botDialog">
+ <div class="dialog-head"><div><h2>Opponent</h2><p>Pick who you're up against.</p></div><button type="button" class="icon-btn" data-close="botDialog" aria-label="Close"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8m0-8-8 8"/></svg></button></div>
+ <div class="dialog-body">
+  <div id="botCards" class="choices"></div>
+  <label class="field"><span>Difficulty</span><select id="difficulty"><option value="easy">Easy — leaves openings</option><option value="normal" selected>Normal — punishes mistakes</option><option value="hard">Hard — sharp reactions</option></select></label>
+  <button id="confirmBot" type="button" class="btn primary full">Confirm</button>
+ </div>
+</dialog>
+
+<dialog id="helpDialog" class="wide">
+ <div class="dialog-head"><div><h2>How to play</h2><p>Fight in real time while your Familiar casts. Nothing pauses.</p></div><button type="button" class="icon-btn" data-close="helpDialog" aria-label="Close"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8m0-8-8 8"/></svg></button></div>
+ <div class="dialog-body">
+  <div class="help">
+   <div class="help-col">
+    <h3>Controls</h3>
+    <dl class="controls">
+     <dt><kbd>WASD</kbd></dt><dd>Move</dd>
+     <dt><kbd>Mouse</kbd></dt><dd>Aim</dd>
+     <dt><kbd>Left click</kbd></dt><dd>Strike</dd>
+     <dt><kbd>Q</kbd></dt><dd>Parry — the first 0.2 s is perfect</dd>
+     <dt><kbd>R</kbd></dt><dd>Counter after a perfect parry</dd>
+     <dt><kbd>E</kbd></dt><dd>Ward — absorbs one hit</dd>
+     <dt><kbd>F</kbd></dt><dd>Guard — improves channel rolls</dd>
+     <dt><kbd>Space</kbd></dt><dd>Dash (also Shift)</dd>
+     <dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></dt><dd>Ember · Rift · Mend</dd>
+     <dt><kbd>X</kbd></dt><dd>Cancel your Familiar's cast</dd>
+     <dt><kbd>Enter</kbd></dt><dd>Speak to your Familiar · <kbd>Esc</kbd> to fight</dd>
+     <dt><kbd>Tab</kbd></dt><dd>Clues (Flag Hunt)</dd>
+    </dl>
+    <p class="muted">While typing: arrow keys move, hold right-click to steer, <kbd>Alt</kbd>+<kbd>Q</kbd>/<kbd>E</kbd>/<kbd>F</kbd> defend.</p>
+   </div>
+   <div class="help-col">
+    <h3>Your Familiar</h3>
+    <p>Spells aren't instant: your Familiar thinks, then channels. Type freely — “open a void rift”, “heal me”, “create a false echo” — or press 1, 2 or 3. Swift, Balanced and Deep Familiars trade cast time for power. Type <b>swap</b> to summon the offline reserve (5 s channel).</p>
+    <h3>Channel defense</h3>
+    <p>If you're hit while your Familiar is thinking, casting or scanning, a d6 decides whether the channel survives: 4–6 normally, 2–6 while guarding. A ward blocks one hit outright.</p>
+    <h3>Clashes</h3>
+    <p>When strikes or spells collide, both fighters lock. Pick before the bar runs out: Push beats Break, Break beats Redirect, Redirect beats Push. No pick loses.</p>
+    <h3>Flag Hunt</h3>
+    <p>Reach the Noetic Relay and scan four times to decode the flag site, then stand on it for 4 uncontested seconds. Kills don't win; you respawn after 4 s.</p>
+   </div>
+  </div>
+  <p class="fineprint">Offline prototype. The offline Familiar is a keyword interpreter, not an LLM, and opponents use local policies. Matches are solo and run in your browser. Flag Hunt is a symbolic deduction puzzle with no real exploitation or live services. Cast times are game balance, not claims about any model's speed; with an API Familiar, real response time adds to your vulnerable thinking window.</p>
+ </div>
+ <div class="dialog-foot"><button type="button" class="btn primary" data-close="helpDialog">Got it</button></div>
+</dialog>
+
+<dialog id="resultDialog">
+ <div class="result">
+  <p id="resultMeta" class="label">Flag Hunt</p>
+  <h2 id="resultTitle">Victory</h2>
+  <p id="resultDescription"></p>
+  <div id="resultStats" class="stats"></div>
+  <div class="result-actions"><button id="returnButton" type="button" class="btn">Main menu</button><button id="rematchButton" type="button" class="btn primary" autofocus>Play again</button></div>
+ </div>
+</dialog>
 <script type="module" src="/game/ui.js"></script></body></html>

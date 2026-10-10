@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Create a standalone offline game and a sanitized full-source ZIP."""
 from pathlib import Path
-import json,re,subprocess,sys,zipfile
+import base64,json,re,subprocess,sys,zipfile
 root=Path(__file__).resolve().parents[1]
 output=Path(sys.argv[1]).resolve();output.parent.mkdir(parents=True,exist_ok=True)
 modules=['rules','world','objective','engine','ai','input','renderer','ui']
@@ -12,13 +12,20 @@ for name in modules:
     text=re.sub(r'^export \{.*?\};\s*$', '', text, flags=re.M)
     text=re.sub(r'\bexport (?=(?:const|function|async function|class)\b)', '', text)
     code.append(text)
+def swap(text,old,new):
+    # Fail loudly if the page changed, so the offline file never ships stale wording or broken links.
+    if old not in text:raise SystemExit(f'package-game-zip: expected text not found: {old[:60]!r}')
+    return text.replace(old,new)
 html=(root/'public/game/index.html').read_text()
-html=html.replace('<link rel="stylesheet" href="/game/style.css">','<style>'+(root/'public/game/style.css').read_text()+'</style>')
-html=html.replace('<script type="module" src="/game/ui.js"></script>','<script type="module">\n'+ '\n'.join(code).replace('</script','<\\/script')+'\n</script>')
+# Bundled fonts become data URIs so the offline file needs no network or sibling files.
+css=re.sub(r'url\("/game/fonts/([^"]+)"\)',lambda m:'url("data:font/woff2;base64,'+base64.b64encode((root/'public/game/fonts'/m.group(1)).read_bytes()).decode()+'")',(root/'public/game/style.css').read_text())
+html=swap(html,'<link rel="stylesheet" href="/game/style.css">','<style>'+css+'</style>')
+html=swap(html,'<script type="module" src="/game/ui.js"></script>','<script type="module">\n'+ '\n'.join(code).replace('</script','<\\/script')+'\n</script>')
 # A static file has no authenticated API server. Keep its UI truthful.
-html=html.replace('Bring an OpenAI Platform API key', 'This offline file cannot connect to APIs. Open the hosted JAOYA Site to bring an OpenAI Platform API key')
-html=re.sub(r'(<form id="connectForm">)(.*?)(</form>)',r'\1<fieldset disabled style="border:0;padding:0;margin:0">\2</fieldset>\3',html,flags=re.S)
-html=html.replace('id="disconnectButton"','id="disconnectButton" disabled')
+html=swap(html,'Use your own OpenAI Platform API key','This offline file can’t connect to APIs. On the hosted JAOYA site you can use your own OpenAI Platform API key')
+html,forms=re.subn(r'(<form id="connectForm">)(.*?)(</form>)',r'\1<fieldset disabled style="border:0;padding:0;margin:0">\2</fieldset>\3',html,flags=re.S)
+if forms!=1:raise SystemExit('package-game-zip: connect form not found')
+html=swap(html,'id="disconnectButton"','id="disconnectButton" disabled')
 files=subprocess.check_output(['git','ls-files','-c','-o','--exclude-standard'],cwd=root,text=True).splitlines()
 with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as archive:
     archive.writestr('JAOYA-PLAY-OFFLINE.html',html)

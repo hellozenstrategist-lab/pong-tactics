@@ -4,9 +4,11 @@ A playable desktop browser arena: moving human summoners, separate floating Fami
 
 ## Look
 
-Airbrushed fantasy-painting presentation: cold blue-grey fog, weathered stone ruins hung with crimson banners, summoners painted as armoured knights (yours white-haired with a crimson cape, the hostile one in black steel), spirit-flame Familiars, drifting embers, ash and smoke, glowing rune stones, and soft light flares on parries and clashes. The menu shows a painted bust of the summoner. The UI uses frosted dark-steel panels with gold trim, crimson accents and engraved serif capitals.
+Airbrushed fantasy-painting arena: cold blue-grey fog, weathered stone ruins hung with crimson banners, summoners painted as armoured knights (yours white-haired with a crimson cape, the hostile one in black steel), spirit-flame Familiars, drifting embers, ash and smoke, glowing rune stones, and soft light flares on parries and clashes. The title screen is a backlit, rim-lit silhouette of your summoner on a ridge.
 
-Everything is procedural Canvas 2D + CSS with system fonts, so the offline build stays self-contained. Soft "airbrush" edges come from radial-gradient dabs; the arena and the menu art are painted once in layers and softened with a single blur per layer, so frames stay cheap (no per-frame `ctx.filter`). Where canvas filters are unsupported (e.g. Safari) the same art renders slightly crisper. `prefers-reduced-motion` disables flashes, shake and drifting particles.
+The interface is deliberately quiet: one typeface (Inter), dark glass panels with hairline borders, a single crimson accent and no ornament. The menu is a mode picker, a two-row loadout and a Play button. In a match the HUD sits at the edges: objective tracker, match clock and opponent bar on top, minimap top right, your vitals and Familiar status bottom left, a command dock (spell input plus an ability bar with live cooldowns and costs) bottom centre, and a combat log bottom right. Announcements are short toasts, clashes and dice rolls are small cards, and clues read as cards instead of raw data.
+
+Everything is procedural Canvas 2D + CSS, so the offline build stays self-contained. Soft "airbrush" edges come from radial-gradient dabs; the arena and the title art are painted once in layers and softened with a single blur per layer, so frames stay cheap (no per-frame `ctx.filter`). Where canvas filters are unsupported (e.g. Safari) the same art renders slightly crisper. `prefers-reduced-motion` disables transitions, flashes, shake and drifting particles.
 
 ## Play immediately
 
@@ -64,12 +66,12 @@ Opposing melee or colliding spell projectiles trigger a 1.8s Resonance Clash. Se
 | `ai.js` | Offline interpreter, API action adapter, independent bot policy |
 | `input.js` | Keyboard and mouse state, separate from text input |
 | `renderer.js` | Painted Canvas 2D arena (layered, baked once), knights and Familiars, light/ember/smoke effects, fog, menu key art and minimap |
-| `ui.js` | Screens, console, asynchronous requests, HUD, evidence and audio |
+| `ui.js` | Screens, command dock, asynchronous requests, HUD (cooldowns, toasts, clue cards), readable combat log and audio |
 | `server/familiar.mjs` | Authenticated same-origin OpenAI bridge and encrypted server-side credential vault |
 | `app/api/familiar/*` | Thin runtime bindings |
 | `db/schema.ts`, `drizzle/` | Credential storage schema and migrations |
 
-The Vinext shell serves the static game in a full-screen iframe and preserves Sites runtime integration. Game modules have no third-party runtime art, fonts, or scripts. Rendering never consumes combat RNG. Reduced-motion settings reduce effects.
+The Vinext shell serves the static game in a full-screen iframe and preserves Sites runtime integration. Game modules have no third-party runtime art or scripts. The UI font is Inter (SIL Open Font License 1.1, `public/game/fonts/OFL.txt`), bundled locally and inlined into the offline file. Rendering never consumes combat RNG. Reduced-motion settings reduce effects.
 
 The engine and legal input boundary can be reused in JAOYA.party. Replace visitor identity with the existing identity service and provision an encrypted server vault. For multiplayer, move simulation/proof validation to authoritative room servers, accept timestamped legal inputs, and broadcast filtered snapshots. The current game is solo and client-authoritative; its local proof objects are not a production security boundary. No existing JAOYA.party service was modified.
 
