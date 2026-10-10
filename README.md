@@ -4,7 +4,7 @@ A playable desktop browser arena: moving human summoners, separate floating Fami
 
 ## Look
 
-Glitch-punk / anime presentation: cel-shaded chibi summoners with ink outlines, fox-spirit Familiars, neon-on-violet arena with halftone and katakana graffiti, manga speed lines, onomatopoeia impact text (ドン!, キン!), RGB-split glitch slices on hits and clashes, and CRT scanlines over a skewed, cut-corner HUD. All art is procedural Canvas 2D + CSS using system fonts, so the offline build stays self-contained. `prefers-reduced-motion` disables glitch, flashes, and screen shake.
+Ink-and-mist presentation inspired by etched dark-fantasy illustration: a pale lavender fog with white cloud filigree, black ink monoliths that drip and sprout thorns, thorned-eye sigils, and summoners drawn as winged mantles with starburst (or thorn) crowns and long ink-wrapped legs. Your Familiar is a floating thorned eye; the hostile one is a spiked ink wisp. Hits splatter ink, perfect parries and clashes throw white starbursts with radiating ink lines, and heavy impacts tear the frame. The UI is pale paper with etched double rules and italic serif type. All art is procedural Canvas 2D + CSS using system fonts, so the offline build stays self-contained. `prefers-reduced-motion` disables flashes, tears and shake.
 
 ## Play immediately
 
@@ -61,7 +61,7 @@ Opposing melee or colliding spell projectiles trigger a 1.8s Resonance Clash. Se
 | `engine.js` | Seeded 60 Hz simulation, movement, attacks, resources, defense, interrupts, clashes, capture and verdicts; no DOM/network |
 | `ai.js` | Offline interpreter, API action adapter, independent bot policy |
 | `input.js` | Keyboard and mouse state, separate from text input |
-| `renderer.js` | Glitch-punk Canvas 2D arena (baked static layer), anime summoners and Familiars, impact effects, glitch post-processing, fog and minimap |
+| `renderer.js` | Ink-and-mist Canvas 2D arena (baked static layer), summoners and Familiars, ink impact effects, mist fog and minimap |
 | `ui.js` | Screens, console, asynchronous requests, HUD, evidence and audio |
 | `server/familiar.mjs` | Authenticated same-origin OpenAI bridge and encrypted server-side credential vault |
 | `app/api/familiar/*` | Thin runtime bindings |
